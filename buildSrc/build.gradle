@@ -2,9 +2,6 @@ plugins {
     id("groovy")
 }
 
-import com.trevorism.DeployPlugin
-apply plugin: DeployPlugin
-
 repositories {
     mavenCentral()
 }

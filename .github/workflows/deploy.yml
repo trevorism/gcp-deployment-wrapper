@@ -1,39 +1,50 @@
-name: Deploy tested project to GCP
+name: Deploy App to GCP
 
 on:
-  push:
-    branches: [ master ]
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      gcp_project:
+        description: 'The project on GCP which is the deploy target. Should be of the format: trevorism-<xyz>'
+        required: true
+        type: string
+      gcp_project_id:
+        description: 'The GCP project id. Should be of the format: 123456789'
+        required: true
+        type: string
+      repo_name:
+        description: 'The name of the repository we are bulding'
+        required: true
+        type: string
+      version:
+        description: 'Version of app to deploy, in dash form (e.g. 1-3-2)'
+        required: true
+        type: string
+      JDK_VERSION:
+        required: false
+        type: string
+        default: '17'
+    secrets:
+      CLIENT_ID:
+        required: false
+      CLIENT_SECRET:
+        required: false
+      SIGNING_KEY:
+        required: true
+      TOKEN:
+        required: false
+      ACCESS_TOKEN:
+        required: false
+      API_KEY:
+        required: false
+      API_SECRET:
+        required: false
+      ENCRYPTION_KEY:
+        required: false
 
 permissions: write-all
 
 jobs:
-  call-build:
-    uses: trevorism/actions-workflows/.github/workflows/build.yml@master
-    with:
-      JDK_VERSION: 17
-
-  call-deploy:
-    uses: trevorism/actions-workflows/.github/workflows/deploy.yml@master
-    if: success() || failure()
-    needs: [call-build, call-accept-before]
-    with:
-      JDK_VERSION: 17
-      gcp_project: 'trevorism-project'
-      gcp_project_id: '51970111147'
-      version: '0-0-1'
-    secrets:
-      CLIENT_ID: ${{ secrets.CLIENT_ID }}
-      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-      SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-
-  call-accept-before:
-    uses: trevorism/actions-workflows/.github/workflows/accept.yml@master
-    with:
-      JDK_VERSION: 17
-
-  call-accept-after:
-    uses: trevorism/actions-workflows/.github/workflows/accept.yml@master
-    needs: call-deploy
-    with:
-      JDK_VERSION: 17
+  checkout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
