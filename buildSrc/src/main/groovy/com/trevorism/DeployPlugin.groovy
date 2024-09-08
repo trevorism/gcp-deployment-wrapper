@@ -12,9 +12,10 @@ class DeployPlugin implements Plugin<Project> {
     private static final String VERSIONING_GROUP = "deploy"
 
     void apply(Project project) {
-        println "Hello WOrld"
+        project.tasks.create("cloneProject", CloneProjectTask)
+        project.tasks.create("deleteClonedProject", DeleteClonedProjectTask)
 
-        //clone into build/project
+
         //modify project, adding values from template
         //invoke GCP Deploy
     }
